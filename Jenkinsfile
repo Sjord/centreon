@@ -49,11 +49,11 @@ stage('Source') {
 
 try {
   stage('Unit tests') {
-    parallel 'centos7': {
+    parallel 'centos8': {
       node {
         sh 'setup_centreon_build.sh'
         unstash 'tar-sources'
-        sh "./centreon-build/jobs/web/${serie}/mon-web-unittest.sh centos7"
+        sh "./centreon-build/jobs/web/${serie}/mon-web-unittest.sh centos8"
         junit 'ut-be.xml,ut-fe.xml'
         if (currentBuild.result == 'UNSTABLE')
           currentBuild.result = 'FAILURE'
@@ -122,11 +122,11 @@ try {
   }
 
   stage('Package') {
-    parallel 'centos7': {
+    parallel 'centos8': {
       node {
         sh 'setup_centreon_build.sh'
         unstash 'tar-sources'
-        sh "./centreon-build/jobs/web/${serie}/mon-web-package.sh centos7"
+        sh "./centreon-build/jobs/web/${serie}/mon-web-package.sh centos8"
       }
 //    },
 //    'debian9': {
@@ -141,10 +141,10 @@ try {
   }
 
   stage('Bundle') {
-    parallel 'centos7': {
+    parallel 'centos8': {
       node {
         sh 'setup_centreon_build.sh'
-        sh "./centreon-build/jobs/web/${serie}/mon-web-bundle.sh centos7"
+        sh "./centreon-build/jobs/web/${serie}/mon-web-bundle.sh centos8"
       }
     }
     if ((currentBuild.result ?: 'SUCCESS') != 'SUCCESS') {
@@ -161,7 +161,7 @@ try {
           sh 'setup_centreon_build.sh'
           unstash 'tar-sources'
           unstash 'vendor'
-          def acceptanceStatus = sh(script: "./centreon-build/jobs/web/${serie}/mon-web-acceptance.sh centos7 features/${feature}", returnStatus: true)
+          def acceptanceStatus = sh(script: "./centreon-build/jobs/web/${serie}/mon-web-acceptance.sh centos8 features/${feature}", returnStatus: true)
           junit 'xunit-reports/**/*.xml'
           if ((currentBuild.result == 'UNSTABLE') || (acceptanceStatus != 0))
             currentBuild.result = 'FAILURE'
